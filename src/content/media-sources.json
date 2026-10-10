@@ -1,0 +1,13 @@
+[
+  { "id": "hero", "source": "hero" },
+  { "id": "signal", "source": "signal" },
+  { "id": "still", "source": "still" },
+  { "id": "bloom", "source": "bloom" },
+  { "id": "terrain", "source": "terrain" },
+  { "id": "fold", "source": "hero", "crop": [1024, 1024] },
+  { "id": "afterimage", "source": "still", "crop": [1024, 1024], "mono": true },
+  { "id": "petal", "source": "bloom", "crop": [1024, 1280], "zoom": true },
+  { "id": "strata", "source": "terrain", "crop": [1536, 864] },
+  { "id": "echo", "source": "signal", "crop": [1024, 1280], "zoom": true },
+  { "id": "process", "source": "signal", "mono": true }
+]
