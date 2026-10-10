@@ -399,8 +399,9 @@ test("desktop navigation stays interactive when homepage motion is enabled", asy
   page.on("pageerror", (error) => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 1440, height: 900 });
+  // Intro playback has separate tests; model a returning visitor here.
+  await page.addInitScript(() => sessionStorage.setItem("forma-intro", "seen"));
   await page.goto("./");
-  await page.getByRole("button", { name: "Skip introduction" }).click();
 
   for (const [label, route] of [
     ["Work", "work/"],

@@ -20,3 +20,9 @@ The new browser regression uses normal motion at 1440px, clicks every desktop na
 - Chrome computer-use inspection confirmed that normal homepage navigation renders the archive correctly after the fix.
 
 Screenshot: `navigation-fixed-desktop.png`, showing archive results after the Branding button is clicked following homepage navigation.
+
+## Published verification
+
+The fix was published in commit `2be2435` through [successful deployment 38082513943](https://github.com/Ha5h7ag/57/actions/runs/38082513943). This push triggered only the intended Actions deployment, consistent with the owner's publishing-source update.
+
+Chrome loaded the new production bundle and normal homepage-to-archive clicks and category filtering worked. The full public-site suite passed 25 checks; the added navigation check initially waited for an intro button that had already disappeared before the page's load event. Its setup now explicitly models a returning visitor, while the separate intro tests retain first-visit coverage. The corrected navigation check passed locally in 3.8 seconds and on GitHub Pages in 8.0 seconds. All 26 checks have therefore passed against the published fix, with the navigation check rerun after correcting that test-only timing issue.
