@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Search, X } from "lucide-react";
+import { ArrowUpRight, Search, X } from "lucide-react";
 import { runMotion } from "../animations/motion";
 import { categories } from "../content/categories";
 import { site } from "../content/site";
@@ -25,7 +25,9 @@ export function ArchivePage() {
     ? requestedCategory
     : "all";
   const filtered = filterArchive(entries, query, category);
+  const hasFilters = Boolean(query || category !== "all");
   const grid = useRef<HTMLDivElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
   const previous = useRef(new Map<string, DOMRect>());
   const reduce = useReducedMotion();
   const snapshot = () => {
@@ -44,6 +46,11 @@ export function ArchivePage() {
     if (!value || value === "all") next.delete(name);
     else next.set(name, value);
     setParams(next, { replace, preventScrollReset: true });
+  };
+  const reset = () => {
+    snapshot();
+    setParams({}, { preventScrollReset: true });
+    searchInput.current?.focus({ preventScroll: true });
   };
   useEffect(() => {
     if (reduce || !grid.current) return;
@@ -92,6 +99,7 @@ export function ArchivePage() {
           <div>
             <Search size={19} aria-hidden="true" />
             <input
+              ref={searchInput}
               type="search"
               value={query}
               placeholder="Title, idea, or material"
@@ -113,17 +121,32 @@ export function ArchivePage() {
             <button
               key={item.id}
               aria-pressed={category === item.id}
+              aria-label={item.label}
               onClick={() => change("category", item.id)}
             >
               {item.label}
+              <span className="filter-total" aria-hidden="true">
+                {item.id === "all"
+                  ? entries.length
+                  : entries.filter((entry) =>
+                      entry.categories.includes(item.id),
+                    ).length}
+              </span>
             </button>
           ))}
         </div>
       </div>
-      <p className="archive-count" aria-live="polite">
-        {filtered.length} {filtered.length === 1 ? "piece" : "pieces"} to
-        explore
-      </p>
+      <div className="archive-results-bar">
+        <p className="archive-count" aria-live="polite" aria-atomic="true">
+          {filtered.length} {filtered.length === 1 ? "piece" : "pieces"} to
+          explore
+        </p>
+        {hasFilters && (
+          <button className="text-link clear-filters" onClick={reset}>
+            Clear filters <X size={16} aria-hidden="true" />
+          </button>
+        )}
+      </div>
       <div ref={grid}>
         {filtered.length ? (
           <WorkGrid entries={filtered} />
@@ -131,22 +154,13 @@ export function ArchivePage() {
           <div className="empty-state">
             <h2>No work found.</h2>
             <p>Try another search or explore all categories.</p>
-            <button
-              className="button-link"
-              onClick={() => {
-                snapshot();
-                setParams({});
-              }}
-            >
+            <button className="button-link" onClick={reset}>
               Reset filters
-              <ArrowReset />
+              <ArrowUpRight size={18} aria-hidden="true" />
             </button>
           </div>
         )}
       </div>
     </div>
   );
-}
-function ArrowReset() {
-  return <span aria-hidden="true">↗</span>;
 }

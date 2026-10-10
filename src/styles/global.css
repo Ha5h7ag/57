@@ -249,6 +249,27 @@ p {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.menu-label {
+  flex: 1;
+}
+.menu-current {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.4;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0;
+}
+.menu-dialog nav a.active > svg {
+  background: var(--accent);
+  color: #1c1f19;
+  padding: 5px;
+  width: 34px;
+  height: 34px;
 }
 .sample-note {
   color: var(--muted);
@@ -301,7 +322,7 @@ p {
 }
 .lightbox {
   border: 0;
-  padding: 54px 30px 22px;
+  padding: 16px 22px 20px;
   color: var(--text);
   background: var(--surface);
   width: 95vw;
@@ -315,19 +336,82 @@ p {
 .lightbox img,
 .lightbox video {
   width: 100%;
-  max-height: 78dvh;
+  max-height: calc(95dvh - 145px);
   height: auto;
   object-fit: contain;
 }
-.lightbox p {
+.lightbox-caption {
   font-size: 12px;
   padding-top: 15px;
   color: var(--muted);
 }
 .lightbox-close {
+  margin-left: 8px;
+}
+.lightbox-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 12px;
+}
+.lightbox-label {
+  margin-right: auto;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.lightbox-toolbar .text-link {
+  font-size: 12px;
+  gap: 8px;
+}
+.lightbox-stage {
+  display: grid;
+  place-items: center;
+  position: relative;
+  min-height: min(45dvh, 360px);
+  background: var(--soft);
+}
+.lightbox-stage > img,
+.lightbox-stage > video {
+  transition: opacity 0.2s;
+}
+.lightbox-stage.is-loading > img,
+.lightbox-stage.is-loading > video {
+  opacity: 0;
+}
+.lightbox-message {
   position: absolute;
-  right: 6px;
-  top: 5px;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 25px;
+  text-align: center;
+  color: var(--muted);
+}
+.lightbox-message p {
+  font-size: 13px;
+}
+@media (hover: none) {
+  .expand-icon {
+    opacity: 1;
+  }
+}
+@media (max-width: 480px) {
+  .lightbox {
+    padding-inline: 12px;
+  }
+  .lightbox-label {
+    font-size: 9px;
+  }
+  .lightbox-toolbar {
+    gap: 8px;
+  }
+  .lightbox-close {
+    margin-left: 0;
+  }
 }
 .hero {
   display: grid;
@@ -1166,7 +1250,40 @@ p {
   font-family: "IBM Plex Mono", monospace;
   color: var(--muted);
   font-size: 11px;
-  margin-block: 25px 35px;
+}
+.archive-results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-block: 18px 28px;
+  min-height: 44px;
+}
+.clear-filters,
+.copy-email {
+  background: transparent;
+  border: 0;
+  font-size: 12px;
+  gap: 10px;
+  padding: 8px 0;
+}
+.clear-filters:hover,
+.copy-email:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.clear-filters:hover svg,
+.copy-email:hover svg {
+  transform: none;
+}
+.archive-filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.filter-total {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
 }
 .empty-state {
   padding-block: 70px 110px;
@@ -1235,6 +1352,24 @@ p {
 }
 .contact-details > .sample-note {
   margin-top: 20px;
+}
+.contact-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding-top: 14px;
+}
+.copy-email {
+  border: 1px solid var(--line);
+  padding-inline: 16px;
+  min-width: 142px;
+  justify-content: flex-start;
+}
+.copy-status {
+  font-size: 12px;
+  color: var(--muted);
+  flex: 1 1 220px;
 }
 .social-links {
   display: flex;

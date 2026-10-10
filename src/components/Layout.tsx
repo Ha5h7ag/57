@@ -118,15 +118,41 @@ export function Header() {
         </div>
         <nav>
           {site.navigation.map((item) => (
-            <Link key={item.path} to={item.path} onClick={() => setOpen(false)}>
-              {item.label}
-              <ArrowUpRight />
-            </Link>
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={() => setOpen(false)}
+            >
+              {({ isActive }) => (
+                <>
+                  <span className="menu-label">
+                    {item.label}
+                    {isActive && (
+                      <span className="menu-current" aria-hidden="true">
+                        Current page
+                      </span>
+                    )}
+                  </span>
+                  <ArrowUpRight aria-hidden="true" />
+                </>
+              )}
+            </NavLink>
           ))}
-          <Link to="/clients/" onClick={() => setOpen(false)}>
-            Collaborators
-            <ArrowUpRight />
-          </Link>
+          <NavLink to="/clients/" onClick={() => setOpen(false)}>
+            {({ isActive }) => (
+              <>
+                <span className="menu-label">
+                  Collaborators
+                  {isActive && (
+                    <span className="menu-current" aria-hidden="true">
+                      Current page
+                    </span>
+                  )}
+                </span>
+                <ArrowUpRight aria-hidden="true" />
+              </>
+            )}
+          </NavLink>
         </nav>
         {site.isDemo && <SampleNote compact />}
       </dialog>

@@ -153,6 +153,139 @@ test("high-resolution viewer closes with Escape and restores focus", async ({
   await expect(trigger).toBeFocused();
 });
 
+test("artwork viewer exposes the original file and dismisses from the backdrop", async ({
+  page,
+  baseURL,
+}) => {
+  await page.goto("art/fold-study/");
+  const trigger = page.locator(".artwork-cover button");
+  await trigger.click();
+  const dialog = page.getByRole("dialog", { name: "Full-resolution artwork" });
+  await expect(dialog.locator(".lightbox-stage")).toHaveClass(/is-ready/);
+  const original = dialog.getByRole("link", { name: "Open original" });
+  expect(await original.getAttribute("href")).toMatch(
+    /\/media\/originals\/.+\.webp$/,
+  );
+  expect(await original.getAttribute("href")).toContain(
+    new URL(baseURL!).pathname,
+  );
+  await expect(original).toHaveAttribute("target", "_blank");
+  const accessibility = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(accessibility.violations.map((violation) => violation.id)).toEqual([]);
+  await page.mouse.click(2, 2);
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
+
+test("artwork viewer recovers gracefully when the original fails", async ({
+  page,
+}) => {
+  let releaseOriginal!: () => void;
+  const pendingOriginal = new Promise<void>((resolve) => {
+    releaseOriginal = resolve;
+  });
+  await page.route("**/media/originals/*.webp", async (route) => {
+    await pendingOriginal;
+    await route.fulfill({ status: 404, body: "Unavailable" });
+  });
+  await page.goto("art/fold-study/");
+  await page.locator(".artwork-cover button").click();
+  const dialog = page.getByRole("dialog", { name: "Full-resolution artwork" });
+  try {
+    await expect(dialog.getByRole("status")).toContainText(
+      "Loading the original artwork",
+    );
+  } finally {
+    releaseOriginal();
+  }
+  await expect(dialog.getByRole("alert")).toContainText(
+    "The original couldn't be loaded.",
+  );
+  await dialog.getByRole("button", { name: "Close artwork" }).click();
+  await expect(dialog).toHaveCount(0);
+});
+
+test("archive filters can be cleared while results are still visible", async ({
+  page,
+}) => {
+  await page.goto("archive/?category=branding&q=signal");
+  await expect(page.locator(".work-item")).toHaveCount(1);
+  await page
+    .getByRole("button", { name: "Clear filters", exact: true })
+    .click();
+  await expect(page.locator(".work-item")).toHaveCount(10);
+  await expect(page.getByRole("searchbox")).toHaveValue("");
+  await expect(page.getByRole("searchbox")).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: "All work", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "Clear filters" })).toHaveCount(
+    0,
+  );
+  await page.goBack();
+  await expect(page.locator(".work-item")).toHaveCount(1);
+});
+
+test("copy email writes the address and confirms success", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("contact/");
+  await page.getByRole("button", { name: "Copy email", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Email copied", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("status")).toContainText("Ready to paste");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "studio@example.com",
+  );
+});
+
+test("copy email gives an alternative when clipboard access is denied", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: async () => {
+          throw new DOMException("Denied", "NotAllowedError");
+        },
+      },
+    });
+  });
+  await page.goto("contact/");
+  await page.getByRole("button", { name: "Copy email", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Copy isn't available here.",
+  );
+  await expect(page.locator(".email-link")).toHaveAttribute(
+    "href",
+    "mailto:studio@example.com",
+  );
+});
+
+test("mobile navigation identifies the current gallery on a project page", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("work/signal/");
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  const dialog = page.getByRole("dialog", { name: "Main navigation" });
+  await expect(
+    dialog.getByRole("link", { name: "Work", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await expect(dialog.locator(".menu-current")).toHaveText("Current page");
+  const accessibility = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(accessibility.violations.map((violation) => violation.id)).toEqual([]);
+  await page.keyboard.press("Escape");
+  await expect(dialog).not.toBeVisible();
+});
+
 test("intro can be skipped and only plays once per session", async ({
   page,
 }) => {
@@ -303,4 +436,63 @@ test("save desktop and mobile visual verification artifacts", async ({
     path: "artifacts/breakdown-mobile.png",
     fullPage: true,
   });
+});
+
+test("refined controls fit desktop and mobile in both themes", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  for (const colorScheme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("contact/");
+    await page.evaluate(() => document.fonts.ready);
+    await page.getByRole("button", { name: "Copy email", exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Email copied", exact: true }),
+    ).toBeVisible();
+    await page.screenshot({
+      path: `artifacts/contact-refined-${colorScheme}.png`,
+    });
+
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto("clients/matter-objects/");
+    await page.getByRole("button", { name: "Open navigation" }).click();
+    const navigation = page.getByRole("dialog", { name: "Main navigation" });
+    await expect(
+      navigation.getByRole("link", { name: "Collaborators", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+    expect(
+      await navigation.evaluate(
+        (element) => element.scrollWidth <= element.clientWidth + 1,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: `artifacts/menu-refined-${colorScheme}.png`,
+    });
+    await page.keyboard.press("Escape");
+
+    await page.goto("art/fold-study/");
+    await page.locator(".artwork-cover button").click();
+    const viewer = page.getByRole("dialog", {
+      name: "Full-resolution artwork",
+    });
+    await expect(viewer.locator(".lightbox-stage")).toHaveClass(/is-ready/);
+    expect(
+      await viewer.evaluate(
+        (element) => element.scrollWidth <= element.clientWidth + 1,
+      ),
+    ).toBe(true);
+    const accessibility = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .analyze();
+    expect(accessibility.violations.map((violation) => violation.id)).toEqual(
+      [],
+    );
+    await page.screenshot({
+      path: `artifacts/viewer-refined-${colorScheme}.png`,
+    });
+    await page.keyboard.press("Escape");
+  }
 });

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Expand, X } from "lucide-react";
+import { ArrowUpRight, Expand, X } from "lucide-react";
 import type { MediaAsset } from "../types/content";
 import { assetUrl } from "../utils/urls";
 
@@ -18,6 +18,9 @@ export function MediaImage({
 }) {
   const [failed, setFailed] = useState(false);
   const [open, setOpen] = useState(false);
+  const [originalState, setOriginalState] = useState<
+    "loading" | "ready" | "error"
+  >("loading");
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const close = () => {
@@ -55,7 +58,10 @@ export function MediaImage({
         <button
           ref={trigger}
           className={`media zoom-media ${className}`}
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setOriginalState("loading");
+            setOpen(true);
+          }}
           aria-label={`View full-resolution image: ${image.alt}`}
         >
           {imageElement}
@@ -73,32 +79,77 @@ export function MediaImage({
             close();
           }}
           onClose={() => setOpen(false)}
+          onClick={(event) => {
+            if (event.target !== event.currentTarget) return;
+            const bounds = event.currentTarget.getBoundingClientRect();
+            if (
+              event.clientX < bounds.left ||
+              event.clientX > bounds.right ||
+              event.clientY < bounds.top ||
+              event.clientY > bounds.bottom
+            )
+              close();
+          }}
           aria-label="Full-resolution artwork"
         >
-          <button
-            className="icon-button lightbox-close"
-            aria-label="Close artwork"
-            onClick={close}
-            autoFocus
-          >
-            <X />
-          </button>
-          {image.videoSrc ? (
-            <video
-              controls
-              autoPlay={false}
-              poster={assetUrl(image.original)}
-              src={assetUrl(image.videoSrc)}
-            />
-          ) : (
-            <img
-              src={assetUrl(image.original)}
-              alt={image.alt}
-              width={image.width}
-              height={image.height}
-            />
-          )}
-          <p>{image.alt}</p>
+          <div className="lightbox-toolbar">
+            <span className="lightbox-label">Artwork viewer</span>
+            <a
+              href={assetUrl(image.videoSrc || image.original)}
+              target="_blank"
+              rel="noreferrer"
+              className="text-link"
+            >
+              Open original <ArrowUpRight size={16} aria-hidden="true" />
+            </a>
+            <button
+              className="icon-button lightbox-close"
+              aria-label="Close artwork"
+              onClick={close}
+              autoFocus
+            >
+              <X />
+            </button>
+          </div>
+          <div className={`lightbox-stage is-${originalState}`}>
+            {originalState !== "error" &&
+              (image.videoSrc ? (
+                <video
+                  controls
+                  autoPlay={false}
+                  poster={assetUrl(image.original)}
+                  src={assetUrl(image.videoSrc)}
+                  onLoadedData={() => setOriginalState("ready")}
+                  onError={() => setOriginalState("error")}
+                />
+              ) : (
+                <img
+                  src={assetUrl(image.original)}
+                  alt={image.alt}
+                  width={image.width}
+                  height={image.height}
+                  onLoad={() => setOriginalState("ready")}
+                  onError={() => setOriginalState("error")}
+                />
+              ))}
+            {originalState !== "ready" && (
+              <div
+                className="lightbox-message"
+                role={originalState === "error" ? "alert" : "status"}
+              >
+                <Expand size={25} aria-hidden="true" />
+                <p>
+                  {originalState === "error"
+                    ? "The original couldn't be loaded."
+                    : "Loading the original artwork…"}
+                </p>
+                {originalState === "error" && (
+                  <p>Close the viewer to return to the gallery.</p>
+                )}
+              </div>
+            )}
+          </div>
+          <p className="lightbox-caption">{image.alt}</p>
         </dialog>
       )}
     </>

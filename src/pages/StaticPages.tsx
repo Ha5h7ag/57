@@ -1,5 +1,6 @@
 import { Link } from "react-router";
-import { ArrowUpRight, ArrowLeft, Mail } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpRight, ArrowLeft, Check, Copy, Mail } from "lucide-react";
 import { site } from "../content/site";
 import { categories } from "../content/categories";
 import { media } from "../content/media";
@@ -68,6 +69,17 @@ export function AboutPage() {
 }
 
 export function ContactPage() {
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
+    "idle",
+  );
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(site.email);
+      setCopyState("copied");
+    } catch {
+      setCopyState("error");
+    }
+  };
   return (
     <div className="contact-page wrap">
       <div className="page-heading">
@@ -88,6 +100,23 @@ export function ContactPage() {
           <span>{site.email}</span>
           <ArrowUpRight strokeWidth={1} aria-hidden="true" />
         </a>
+        <div className="contact-actions">
+          <button className="text-link copy-email" onClick={copyEmail}>
+            {copyState === "copied" ? (
+              <Check size={17} aria-hidden="true" />
+            ) : (
+              <Copy size={17} aria-hidden="true" />
+            )}
+            {copyState === "copied" ? "Email copied" : "Copy email"}
+          </button>
+          <p role="status" className="copy-status">
+            {copyState === "copied"
+              ? "Ready to paste into your email app."
+              : copyState === "error"
+                ? "Copy isn't available here. Select the email address above to copy it."
+                : "Prefer your own email app? Copy the address."}
+          </p>
+        </div>
         {site.emailIsSample && (
           <p className="sample-note">
             Sample email address. Replace it with the artist's real email in
