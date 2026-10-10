@@ -2,6 +2,40 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { publicRoutes } from "../../src/utils/content";
 
+test("prerendered navigation works without JavaScript under the deployment base", async ({
+  browser,
+  baseURL,
+}) => {
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    baseURL,
+  });
+  const page = await context.newPage();
+  const base = new URL(baseURL!).pathname;
+  try {
+    await page.goto("./");
+    const internalLinks = await page
+      .locator('a[href^="/"]')
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href")!));
+    expect(internalLinks.length).toBeGreaterThan(10);
+    expect(internalLinks.filter((href) => !href.startsWith(base))).toEqual([]);
+    await page
+      .locator(".desktop-nav")
+      .getByRole("link", { name: "Work", exact: true })
+      .click();
+    await expect(page).toHaveURL(new URL("work/", baseURL!).href);
+    await expect(page.locator("main h1")).toContainText("An idea.");
+    await page.locator(".work-item").first().click();
+    await expect(page.locator("main h1")).toContainText("Turn up");
+    await page
+      .getByRole("link", { name: "Forma Studio home", exact: true })
+      .click();
+    await expect(page).toHaveURL(baseURL!);
+  } finally {
+    await context.close();
+  }
+});
+
 test("every public route serves prerendered content and survives refresh", async ({
   page,
   request,

@@ -181,6 +181,17 @@ npm run test:e2e
 
 On Windows, an installed Chrome can be used with `$env:PLAYWRIGHT_CHANNEL = 'chrome'`. Browser tests use the production static server, covering public routes, refreshes, 404s, relationships, archive queries/history, annotations, dialogs, intro behaviour, responsive widths, themes, and automated accessibility. Unit tests cover content integrity, archive queries, and geometry. No percentage coverage target is imposed.
 
+To check an already deployed site instead of starting the local server, set `E2E_BASE_URL` to its full URL, including the repository path and trailing slash:
+
+```powershell
+$env:E2E_BASE_URL = 'https://ha5h7ag.github.io/57/'
+$env:PLAYWRIGHT_CHANNEL = 'chrome'
+npm run test:e2e
+Remove-Item Env:E2E_BASE_URL
+```
+
+The suite also checks native navigation with JavaScript disabled, so prerendered links must retain the hosting base path before hydration.
+
 Continuous integration installs Chromium. Browser verification needs permission to connect to localhost when running under a restricted sandbox.
 
 ## Troubleshooting

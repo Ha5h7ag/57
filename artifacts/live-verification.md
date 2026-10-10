@@ -1,19 +1,21 @@
 # Live deployment verification
 
-Checked on 10 October 2026 at `https://ha5h7ag.github.io/57/`.
+Checked on 11 October 2026 at `https://ha5h7ag.github.io/57/`.
 
-**Result: the published portfolio is not working yet.**
+**Result: the live application runs, but its prerendered links omit the repository path. The correction is verified locally and has not been deployed yet.**
 
-- The homepage returns HTTP 200 but displays a blank page.
-- Its HTML is the source template: `%BASE_URL%favicon.svg`, `<!--app-html-->`, and `/src/entry-client.tsx` remain unprocessed. It has no prerendered content or compiled application assets.
-- `/57/work/`, `/57/archive/`, and `/57/contact/` return HTTP 404.
-- The referenced `/src/entry-client.tsx` also returns HTTP 404.
-- GitHub's automatic `pages build and deployment` run succeeded at commit `d5ed43d`, while the repository's `Deploy portfolio to Pages` workflow remains failed. This indicates that source files were published instead of the built `dist` artifact.
+- The earlier source-file deployment has been replaced by compiled assets and prerendered HTML.
+- All 23 public routes serve content and survive refresh. No uncaught JavaScript errors were detected by the route checks.
+- 17 existing live browser tests passed: archive filtering/history, design breakdown decisions, full-resolution viewer/Escape/focus restoration, introduction skip/completion, mobile navigation, theme persistence, responsive layouts, animation cleanup, and automated accessibility in both themes.
+- The new native-navigation regression test failed on the live site: 40 homepage links use paths such as `/work/` instead of `/57/work/`. JavaScript navigation can work while opening the same links in a new tab or navigating before hydration fails.
+- Contact remains a `mailto:` link to the explicitly labelled sample address `studio@example.com`. There is no backend form or real destination configured.
 
-## Required repair
+## Correction and validation
 
-The repository owner or maintainer must select **Settings → Pages → Build and deployment → Source → GitHub Actions**. The custom deployment workflow already exists; no new template is needed.
+`src/entry-server.tsx` now gives `StaticRouter` the same basename and matching location as the browser router. Generated links retain the `/57/` prefix, including before JavaScript loads.
 
-The local workflow now gives the build job `pages: read` so `configure-pages` can read site metadata. Push this change, then run **Deploy portfolio to Pages** against `main`. The deploy job already has `pages: write` and `id-token: write`.
+- TypeScript, ESLint, production build, and all 11 unit tests passed.
+- All 18 browser tests passed against the corrected local `/57/` production build, including native navigation without JavaScript.
+- `E2E_BASE_URL` now allows the same suite to inspect an existing deployment without starting a local server.
 
-After that workflow succeeds, repeat live route, asset, responsive, accessibility, and interaction checks. Those checks cannot be completed against the current blank deployment.
+Push the correction and let **Deploy portfolio to Pages** complete, then rerun the live suite. Artist identity, real work, contact email, and social profiles still need artist-provided content.
