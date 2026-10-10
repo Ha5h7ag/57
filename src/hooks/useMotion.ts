@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import type { RefObject } from "react";
 import { runMotion } from "../animations/motion";
 
@@ -19,7 +19,8 @@ export function usePageMotion(
   path: string,
 ) {
   const reduce = useReducedMotion();
-  useEffect(() => {
+  // Revert pin wrappers before React removes this route's DOM children.
+  useLayoutEffect(() => {
     if (reduce || !ref.current) return;
     return runMotion(ref, (gsap) => {
       gsap.from(".page-enter", {

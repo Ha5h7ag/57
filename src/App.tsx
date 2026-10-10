@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import type { ReactNode } from "react";
 import { Routes, Route, useLocation } from "react-router";
 import { Header, Footer, RouteEffects } from "./components/Layout";
 import { usePageMotion } from "./hooks/useMotion";
@@ -13,15 +14,24 @@ import {
 import { ArchivePage } from "./pages/Archive";
 import { AboutPage, ContactPage, NotFound } from "./pages/StaticPages";
 
-export function App() {
+// A keyed route owns its motion so cleanup runs before its children are removed.
+function MotionPage({ path, children }: { path: string; children: ReactNode }) {
   const main = useRef<HTMLElement>(null);
+  usePageMotion(main, path);
+  return (
+    <main id="main" ref={main}>
+      {children}
+    </main>
+  );
+}
+
+export function App() {
   const location = useLocation();
-  usePageMotion(main, location.pathname);
   return (
     <>
       <Header />
       <RouteEffects />
-      <main id="main" ref={main}>
+      <MotionPage key={location.pathname} path={location.pathname}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/work" element={<WorkPage />} />
@@ -39,7 +49,7 @@ export function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </main>
+      </MotionPage>
       <Footer />
     </>
   );

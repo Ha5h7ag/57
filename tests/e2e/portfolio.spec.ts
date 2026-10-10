@@ -391,6 +391,61 @@ test("representative routes meet automated accessibility checks in both themes",
   }
 });
 
+test("desktop navigation stays interactive when homepage motion is enabled", async ({
+  page,
+  baseURL,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Skip introduction" }).click();
+
+  for (const [label, route] of [
+    ["Work", "work/"],
+    ["Art", "art/"],
+    ["Studio", "about/"],
+    ["Archive", "archive/"],
+    ["Contact", "contact/"],
+  ]) {
+    await expect(page.locator(".pin-spacer")).toHaveCount(1);
+    await page
+      .locator(".desktop-nav")
+      .getByRole("link", {
+        name: label,
+        exact: true,
+      })
+      .click();
+    await expect(page).toHaveURL(new URL(route, baseURL!).href);
+    await expect(page.locator(".pin-spacer")).toHaveCount(0);
+    await expect(page.locator("main h1")).toBeVisible();
+    expect(errors).toEqual([]);
+    if (label === "Archive") {
+      await page.getByRole("button", { name: "Branding", exact: true }).click();
+      await expect(page.locator(".work-item")).toHaveCount(2);
+      await page.screenshot({ path: "artifacts/navigation-fixed-desktop.png" });
+    }
+    if (label === "Contact") {
+      await page.getByRole("button", { name: "Switch to dark theme" }).click();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    }
+    await page.getByRole("link", { name: "Forma Studio home" }).click();
+    await expect(page).toHaveURL(baseURL!);
+  }
+
+  await expect(page.locator(".pin-spacer")).toHaveCount(1);
+  await page.getByRole("link", { name: "Explore the study" }).click();
+  await expect(page).toHaveURL(new URL("work/form-in-motion/", baseURL!).href);
+  await expect(page.locator("main h1")).toContainText("Form in motion");
+  await page.goBack();
+  await expect(page.locator(".pin-spacer")).toHaveCount(1);
+  await page.goForward();
+  await expect(page.locator(".pin-spacer")).toHaveCount(0);
+  await expect(page.locator("main h1")).toContainText("Form in motion");
+  expect(errors).toEqual([]);
+});
+
 test("motion remains usable across navigation and responsive changes", async ({
   page,
 }) => {
