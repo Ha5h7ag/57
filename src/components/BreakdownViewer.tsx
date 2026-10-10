@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { runMotion } from "../animations/motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "./Icons";
 import type { BreakdownEntry } from "../types/content";
 import { useReducedMotion } from "../hooks/useMotion";
 import { MediaImage } from "./MediaImage";

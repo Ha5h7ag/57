@@ -351,6 +351,10 @@ test("theme selection survives navigation and contact opens a mail client", asyn
   page,
 }) => {
   await page.goto("contact/");
+  await page.getByRole("button", { name: "Switch to light theme" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.getByRole("button", { name: "Switch to dark theme" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.reload();
@@ -370,6 +374,10 @@ test("representative routes meet automated accessibility checks in both themes",
   test.setTimeout(60000);
   for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme });
+    await page.addInitScript(
+      (theme) => localStorage.setItem("forma-theme", theme),
+      colorScheme,
+    );
     for (const route of [
       "./",
       "archive/",
@@ -428,8 +436,8 @@ test("desktop navigation stays interactive when homepage motion is enabled", asy
       await page.screenshot({ path: "artifacts/navigation-fixed-desktop.png" });
     }
     if (label === "Contact") {
-      await page.getByRole("button", { name: "Switch to dark theme" }).click();
-      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      await page.getByRole("button", { name: "Switch to light theme" }).click();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     }
     await page.getByRole("link", { name: "Forma Studio home" }).click();
     await expect(page).toHaveURL(baseURL!);
@@ -501,6 +509,10 @@ test("refined controls fit desktop and mobile in both themes", async ({
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme });
+    await page.addInitScript(
+      (theme) => localStorage.setItem("forma-theme", theme),
+      colorScheme,
+    );
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("contact/");
     await page.evaluate(() => document.fonts.ready);

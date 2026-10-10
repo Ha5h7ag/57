@@ -59,18 +59,22 @@ for (const job of jobs) {
         .toFile(file);
   }
   await sharp(target)
-    .resize(1200, 630, { fit: "contain", background: "#f2f3ed" })
+    .resize(1200, 630, { fit: "contain", background: "#09090b" })
     .webp({ quality: 86 })
     .toFile(`public/media/generated/${job.id}-social.webp`);
 }
 // Self-hosted font packages include OFL licences; retain copies with the project.
 await mkdir("public/licenses", { recursive: true });
-for (const name of ["space-grotesk", "ibm-plex-mono"]) {
+for (const name of ["inter", "jetbrains-mono"]) {
   await copyFile(
     path.join("node_modules", "@fontsource", name, "LICENSE"),
     `public/licenses/${name}.txt`,
   );
 }
+await copyFile(
+  path.join("node_modules", "@phosphor-icons", "react", "LICENSE"),
+  "public/licenses/phosphor-icons.txt",
+);
 console.log(
   `Optimized ${jobs.length} demonstration images into responsive WebP variants.`,
 );

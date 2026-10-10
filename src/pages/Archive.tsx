@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { ArrowUpRight, Search, X } from "lucide-react";
+import { ArrowUpRight, Search, X } from "../components/Icons";
 import { runMotion } from "../animations/motion";
 import { categories } from "../content/categories";
 import { site } from "../content/site";

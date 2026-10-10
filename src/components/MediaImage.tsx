@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Expand, X } from "lucide-react";
+import { ArrowUpRight, Expand, X } from "./Icons";
 import type { MediaAsset } from "../types/content";
 import { assetUrl } from "../utils/urls";
 
@@ -108,7 +108,7 @@ export function MediaImage({
               onClick={close}
               autoFocus
             >
-              <X />
+              <X size={24} />
             </button>
           </div>
           <div className={`lightbox-stage is-${originalState}`}>

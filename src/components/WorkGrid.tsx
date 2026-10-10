@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "./Icons";
 import { categoryLabel } from "../content/categories";
 import type { ArchiveEntry } from "../types/content";
 import { MediaImage } from "./MediaImage";
@@ -28,7 +28,7 @@ export function WorkGrid({
               priority={false}
             />
             <span className="work-open" aria-hidden="true">
-              <ArrowUpRight />
+              <ArrowUpRight size={24} />
             </span>
           </div>
           <div className="work-caption">

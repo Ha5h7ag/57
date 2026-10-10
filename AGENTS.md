@@ -4,9 +4,7 @@ Whatever action you can do yourself, Please do yourself, this includes starting 
 
 ## Project Structure & Module Organization
 
-This repository is a static artist portfolio using React, TypeScript, Vite, React Router, and GSAP.
-
-Follow this structure:
+Static artist portfolio: React, TypeScript, Vite, React Router, and GSAP.
 
 - `src/components/`: reusable navigation, galleries, editorial blocks, and design breakdowns.
 - `src/pages/`: shared route templates, never individual project implementations.
@@ -18,7 +16,7 @@ Follow this structure:
 
 ## Build, Test, and Development Commands
 
-Run these commands from the repository root:
+From the repository root:
 
 - `npm ci`: install dependencies from the committed lockfile.
 - `npm run dev`: start local development.
@@ -37,15 +35,19 @@ Use PascalCase for components and types, camelCase for functions, and kebab-case
 
 Clean up GSAP effects on unmount and respect reduced-motion preferences.
 
+Use Phosphor UI icons (`@phosphor-icons/react`) through `src/components/Icons.ts`. Preserve sizes; use regular weight or light editorial arrows. Do not add other icon libraries. Keep annotation SVGs and wordmarks intact.
+
+Follow `DESIGN.md` styling. Preserve structure, grids, spacing, responsive layouts, and animations unless the user requests changes.
+
 ## Testing Guidelines
 
-Use Vitest for content validation, relationships, archive filtering, and annotation geometry. Name unit tests `*.test.ts` or `*.test.tsx`; name browser tests `*.spec.ts`.
+Use Vitest for content, relationships, filters, and geometry. Name unit tests `*.test.ts` or `*.test.tsx`; browser tests `*.spec.ts`.
 
-Use Playwright to verify deep links, refreshes, repository subpaths, keyboard interactions, responsive layouts, and reduced motion. No percentage coverage threshold is established; prioritize meaningful behaviour tests.
+Use Playwright for deep links, refreshes, subpaths, keyboard interactions, responsive layouts, and motion. Prioritize meaningful behavior; no coverage threshold is established.
 
 ## Commit & Pull Request Guidelines
 
-No existing Git history establishes conventions. Adopt imperative Conventional Commits, such as `feat: add artwork gallery`.
+Follow the repository's imperative Conventional Commits, such as `feat: add artwork gallery`, `fix: repair navigation`, and `test: verify route behavior`.
 
 Pull requests should explain changes, reference relevant issues, report executed checks, and include desktop/mobile screenshots for visual changes.
 

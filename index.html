@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f2f3ed" />
+    <meta name="theme-color" content="#09090b" />
     <link rel="icon" href="%BASE_URL%favicon.svg" type="image/svg+xml" />
     <script>
       try {
         const theme = localStorage.getItem("forma-theme");
-        if (theme === "light" || theme === "dark")
-          document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.theme =
+          theme === "light" ? "light" : "dark";
       } catch {
         /* Theme storage is optional. */
       }

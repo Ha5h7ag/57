@@ -1,6 +1,12 @@
 import { Link } from "react-router";
 import { useState } from "react";
-import { ArrowUpRight, ArrowLeft, Check, Copy, Mail } from "lucide-react";
+import {
+  ArrowUpRight,
+  ArrowLeft,
+  Check,
+  Copy,
+  Mail,
+} from "../components/Icons";
 import { site } from "../content/site";
 import { categories } from "../content/categories";
 import { media } from "../content/media";
@@ -96,9 +102,9 @@ export function ContactPage() {
       </div>
       <div className="contact-details" data-reveal>
         <a href={`mailto:${site.email}`} className="email-link">
-          <Mail strokeWidth={1} aria-hidden="true" />
+          <Mail size={24} weight="light" aria-hidden="true" />
           <span>{site.email}</span>
-          <ArrowUpRight strokeWidth={1} aria-hidden="true" />
+          <ArrowUpRight size={24} weight="light" aria-hidden="true" />
         </a>
         <div className="contact-actions">
           <button className="text-link copy-email" onClick={copyEmail}>

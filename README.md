@@ -1,8 +1,12 @@
 # Forma Studio
 
-A static artist portfolio designed as an exhibition: expressive typography, editorial project stories, independent artwork, and interactive design breakdowns. Built locally with React, TypeScript, Vite, React Router, GSAP/ScrollTrigger, Lucide React, and custom CSS. No production server, CMS, database, or paid hosting is required.
+A static artist portfolio designed as an exhibition: expressive typography, editorial project stories, independent artwork, and interactive design breakdowns. Built locally with React, TypeScript, Vite, React Router, GSAP/ScrollTrigger, Phosphor icons, and custom CSS. No production server, CMS, database, or paid hosting is required.
 
 **This is a demonstration portfolio.** Forma Studio, the three collaborators, five projects, five artworks, and sample contact address are fictional. Five original AI-generated images and their derived studies were created for this project. They are not an authentic artist's commissions, photographs, or process documentation.
+
+## Visual guidelines
+
+`DESIGN.md` contains the supplied visual reference. The site uses its dark charcoal/orange palette, self-hosted Inter and JetBrains Mono, and rounded media and controls. The existing structure, grids, spacing, responsive layouts, artwork, and GSAP animations are preserved. Dark is the default; the theme toggle stores an explicit light or dark preference. Import interface icons through `src/components/Icons.ts`, which exposes individual SSR-compatible Phosphor icons. Use regular weight by default and light weight for the existing large editorial arrows.
 
 ## Install and run
 

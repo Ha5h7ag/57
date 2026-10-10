@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router";
-import { ArrowUpRight, Menu, Moon, Sun, X } from "lucide-react";
+import { ArrowUpRight, Menu, Moon, Sun, X } from "./Icons";
 import { site } from "../content/site";
 import { pageSeo } from "../utils/seo";
 
@@ -15,7 +15,7 @@ export function SampleNote({ compact = false }: { compact?: boolean }) {
 }
 
 function ThemeToggle() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
   const preference = useRef<string | null>(null);
   useEffect(() => {
     try {
@@ -23,17 +23,9 @@ function ThemeToggle() {
     } catch {
       /* Storage is optional. */
     }
-    const query = window.matchMedia("(prefers-color-scheme: dark)");
-    const apply = () => {
-      const value = preference.current
-        ? preference.current === "dark"
-        : query.matches;
-      setDark(value);
-      document.documentElement.dataset.theme = value ? "dark" : "light";
-    };
-    apply();
-    query.addEventListener("change", apply);
-    return () => query.removeEventListener("change", apply);
+    const value = preference.current !== "light";
+    setDark(value);
+    document.documentElement.dataset.theme = value ? "dark" : "light";
   }, []);
   return (
     <button
@@ -95,7 +87,7 @@ export function Header() {
           aria-expanded={open}
           onClick={() => setOpen(true)}
         >
-          <Menu />
+          <Menu size={24} />
         </button>
       </header>
       <dialog
@@ -113,7 +105,7 @@ export function Header() {
             onClick={() => setOpen(false)}
             autoFocus
           >
-            <X />
+            <X size={24} />
           </button>
         </div>
         <nav>
@@ -133,7 +125,7 @@ export function Header() {
                       </span>
                     )}
                   </span>
-                  <ArrowUpRight aria-hidden="true" />
+                  <ArrowUpRight size={24} aria-hidden="true" />
                 </>
               )}
             </NavLink>
@@ -149,7 +141,7 @@ export function Header() {
                     </span>
                   )}
                 </span>
-                <ArrowUpRight aria-hidden="true" />
+                <ArrowUpRight size={24} aria-hidden="true" />
               </>
             )}
           </NavLink>

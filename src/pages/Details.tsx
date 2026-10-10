@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router";
-import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "../components/Icons";
 import { clients } from "../content/clients";
 import { projects } from "../content/projects";
 import { artworks } from "../content/artwork";

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "../components/Icons";
 import { projects } from "../content/projects";
 import { artworks } from "../content/artwork";
 import { clients } from "../content/clients";
@@ -77,7 +77,7 @@ export function Home() {
         <ArrowDownRight
           className="statement-arrow"
           size={62}
-          strokeWidth={1}
+          weight="light"
           aria-hidden="true"
         />
         <div>
@@ -199,7 +199,7 @@ export function Home() {
             <br />
             in mind?
           </h2>
-          <ArrowUpRight className="contact-arrow" strokeWidth={1} />
+          <ArrowUpRight size={24} className="contact-arrow" weight="light" />
         </Link>
         <span>Contact</span>
       </section>

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "./Icons";
 import type { EditorialBlock, Project } from "../types/content";
 import { MediaImage } from "./MediaImage";
 

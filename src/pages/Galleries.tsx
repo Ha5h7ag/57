@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "../components/Icons";
 import { archiveEntries } from "../utils/content";
 import { clients } from "../content/clients";
 import { site } from "../content/site";
@@ -84,7 +84,7 @@ export function ClientsPage() {
             />
             <div>
               <h2>{client.name}</h2>
-              <ArrowUpRight />
+              <ArrowUpRight size={24} />
             </div>
             <p>{client.industry}</p>
             <p>{client.description}</p>
